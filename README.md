@@ -1,4 +1,4 @@
-text-adventure
+text-adventure (still in progress)
 
 Commands:
 * (n)orth
