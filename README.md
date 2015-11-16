@@ -6,5 +6,4 @@ Commands:
 * (e)ast
 * (w)est
 * (inv)entory
-* bat
-* key
+* (look)

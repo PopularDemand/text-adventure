@@ -8,6 +8,7 @@ power = 20
 bat = 1  #have you picked up the bat
 catnip = 1  #have you picked up the catnip
 key = 1  #have you picked up the key
+gun = 1  #have you picked up the gun
 
 bakery_first_time = 1  #have you seen the bakery once
 school_first_time = 1  #have you seen the school once
@@ -85,7 +86,7 @@ def bat_room():
 	elif choice == "look":
 		bat_room()
 	else:
-		print "What?"
+		error_message(choice)
 		bat_room()
 
 def bakery():
@@ -109,7 +110,7 @@ def bakery():
 	elif choice == "n" or "north" in choice:
 		bat_room()
 	else:
-		print "What?"
+		error_message(choice)
 		bakery()
 		
 def key_room():
@@ -141,7 +142,7 @@ def key_room():
 	elif choice == "w" or "west" in choice:
 		bat_room()
 	else:
-		print "What?"
+		error_message(choice)
 		key_room()
 
 def school():
@@ -168,7 +169,7 @@ def school():
 	elif choice == "w" or "west" in choice:
 		bakery()
 	else:
-		print "What?"
+		error_message(choice)
 		school()
 	
 def locked_door():
@@ -202,7 +203,7 @@ def locked_door():
 			print "You flee south."
 			key_room()
 		else:
-			print "What?"
+			error_message(choice)
 			locked_door()
 	else:
 		print "There is a door to a warehouse here. It appears to be locked."
@@ -225,7 +226,7 @@ def locked_door():
 			print "Well, shucks. The key doesn't open this door."
 			locked_door()
 		else:
-			print "What?"
+			error_message(choice)
 			locked_door()
 	
 def ivy_room():
@@ -246,6 +247,8 @@ def ivy_room():
 		locked_door()
 	elif choice == "e" or "east" in choice:
 		open_door()
+	elif choice == "s" or "south" in choice:
+		bad_guys_entry()
 	else:
 		error_message(choice)
 		ivy_room()
@@ -269,6 +272,8 @@ def open_door():
 		ivy_room()
 	elif choice == "s" or "south" in choice:
 		chem_lab()
+	elif choice == "e" or "east" in choice and not open_door_first_time:
+		cat_room()
 	
 	elif "door" in choice and key == 1:
 		print "This door is locked. Maybe there is a key somewhere..."
@@ -278,8 +283,259 @@ def open_door():
 		open_door_first_time = 0
 		open_door()
 	else:
-		print "What?"
-start()
+		error_message(choice)
+		open_door()
 
-	
-	
+def cat_room():
+	global indoor_cat
+
+	if indoor_cat == 1:
+		print "You enter the door. Through the darkness you can see a two entryways across the room, but there is an ornery stray cat blocking your path."
+		print "You can fight the cat or flee."
+		
+		choice = raw_input("> ")
+		
+		if "inv" in choice:
+			inv_check()
+			cat_room()
+		elif choice == "look":
+			cat_room()
+		
+		elif "fight" in choice:
+			if "bat" in inv:
+				print "You break the rabid stray's back with the bat. The bat breaks and is useless now."
+				inv.remove("bat")
+				indoor_cat = 0
+				cat_room()
+			else:
+				print "You tackle the cat. It scratches and bites, but eventually you overcome it."
+				print "Unfortunately, you took some damage in the scrap."
+				health_change(-20)
+				indoor_cat = 0
+				cat_room()
+		elif "flee" in choice:
+			print "You flee east."
+			open_door()
+		else:
+			error_message(choice)
+			cat_room()
+
+	else:
+		print "There is a door cracked open to the east. You hear scuffles and yelling. And... Is that Scotch crying out?!"
+
+		choice = raw_input("> ")
+
+		if "inv" in choice:
+			inv_check()
+			cat_room()
+		elif choice == "look":
+			cat_room()
+
+		elif choice == "w" or "west" in choice:
+			open_door()
+		elif choice == "e" or "east" in choice:
+			scotch_room()
+		else:
+			error_message(choice)
+			cat_room()
+
+def bad_guys_entry():
+	global entry_bad_guys
+	global bat
+	global gun
+
+	if entry_bad_guys:
+		print "You follow the shadowy figures. It's two big men dressed in the greys of Mustafa's cronies."
+		print "They stand in front of a door to a warehouse smoking cigarettes and talking about..."
+		print "'The girl that was dumb enough to return'?! Could they mean Scotch?"
+		print "Apparently, she is being held captive in the warehouse the two are guarding."
+		print "You measure up the cronies and think you can take them while maybe sustaining significant injuries."
+		print "Maybe there's another entry somewhere...\n"
+		print "Do you fight through the bad guys or go back?"
+
+		choice = raw_input("> ")
+
+		if "fight" in choice:
+			print "\nYou need to get to Scotch as soon as possible. And if that means taking some damage, so be it."
+			if "bat" in inv:
+				print "You sneak through the shadows until you are within bat's reach of the men."
+				print "You swiftly bring the bat over one of the men's head. He buckles and the bat splinters."
+				print "The other guys unholsters his gun and fires a shot. It misses."
+				print "You rush towards him and plunge what's left of the bat into his gut."
+				print "He gasps and falls backward, freeing the bat. You then jam it into his neck. He's not getting back up.\n"
+				print "The first man grabs you from behind. He hooks his arm under yours and pulls until your shoulder pops."
+				print "Pain erupts through your chest. Your head flinches backward, fortunatly knocking the man off of you."
+				print "You spring forward and grab the pistol from the fallen crony."
+				print "While the first man is fumbling for his own pistol, you fire one shot straight to his face. He falls.\n"
+				print "You hide in the shadows in case more cronies follow the gunshots."
+				print "As you wait, you pop your dislocated shoulder back into place. No more bad guys arrive."
+				print "You've won. Barely.\n"
+				get("gun")
+				inv.remove('bat')
+				gun = 0
+				health_change(-40)
+				power_change(-5)
+			elif "bat" not in inv:
+				print "You sneak through the shadows until you are in reach of the men. They don't see you."
+				print "The man farther away from you receives a call. 'Hey, babe,' he answers and walks away.\n"
+				print "With one distracted, you lunge forward and grab the remaining one around the neck."
+				print "He claws at your face, getting one good scratch above your right eye. Maintaining control, you twist his head until you hear a crack."
+				print "You drag his lifeless body to the shadows.\n"
+				print "Before you have a chance to set him down, you hear 'HEY HEY HEY'."
+				print "The other man is off of his phone and sprinting toward you with his pistol drawn! He fires a shot and hits you in the shoulder."
+				print "Two more shots come in, but they lodge in the man you are dragging. As you dodge and fumble, you notice a holster on the dead man."
+				print "You pull the gun out and hope it's loaded.\n"
+				print "You drop the man your dragging and juke into the shadows faster than the shooter can comprehend."
+				print "As he fires in you general direction, you take three shots at his and all hit the center of mass. He falls back crying in agony."
+				print "His cries are soon drowned in blood and stop coming altogether.\n"
+				print "You hide behind some trashcans in case the gunshots caught the attention of more cronies."
+				print "As you wait, you inspect your shoulder wound. Doc would probably say it's superficial, but it still hurts like hell."
+				print "Blood is pouring down the right side of your face from the scratch above your eye."
+				print "After concluding no one else was coming to investigate the commotion, you powder the wounds to stop the bleeding. And look around.\n"
+				get("gun")
+				gun = 0
+				health_change(-50)
+				power_change(-5)
+			raw_input("Press [Enter]")
+			entry_bad_guys = 0
+			bad_guys_entry()
+		elif "inv" in choice:
+			inv_check()
+			bad_guys_entry()
+		elif choice == "look":
+			bad_guys_entry()
+		elif choice == "e" or "east" in choice or "back" in choice:
+			print "You decide to head back the way you came. As you slide back into the shadows, though, you trip over some loose rubble."
+			print "The guys hear you! They unholster their guns and head your way shouting 'WHO'S THERE?' Welp.\n..."
+			print "Fight or flee?"
+
+			choice = raw_input("> ")
+
+			if "flee" in choice:
+				fleeing()
+			elif "fight" in choice:
+				if "bat" in inv:
+					print "You hide behind a dumpster, out of the line of sight of the men."
+					print "As they pass you, you swiftly bring the bat over one of the men's head. He buckles, and the bat splinters."
+					print "The other guys unholsters his gun and fires a shot. It misses."
+					print "You rush towards him and plunge what's left of the bat into his gut."
+					print "He gasps and falls backward, freeing the bat. You then jam it into his neck. He's not getting back up.\n"
+					print "The first man tackles you. He hooks his arm under yours and pulls until your shoulder pops."
+					print "Pain erupts through your chest. Your head flinches backward, fortunatly knocking the man off of you.\n"
+					print "You spring forward and grab the pistol from the fallen crony."
+					print "While the first man is fumbling for his own pistol, you fire one shot straight to his face. He falls.\n"
+					print "You hide in the shadows in case more cronies follow the gunshots."
+					print "As you wait, you pop your dislocated shoulder back into place. No more bad guys arrive."
+					print "You've won. Barely.\n"
+					get("gun")
+					gun = 0
+					inv.remove("bat")
+					health_change(-40)
+					power_change(-5)
+
+				elif "bat" not in inv:
+					print "You hide behind a dumpster, out of the line of sight of the men."
+					print "The two men pass you in tandem. You swiftly grab the second one around the neck from behind."
+					print "He claws at your face, getting one good scratch above your right eye. Maintaining control, you twist his head until you hear a crack."
+					print "You drag his lifeless body into the shadows.\n"
+					print "Before you have a chance to set his down, you hear 'HEY HEY HEY'."
+					print "The other man is sprinting toward you with his pistol drawn! He fires a shot and hits you in the shoulder."
+					print "Two more shots come in, but they lodge in the man you are dragging. As you dodge and fumble, you notice the dead man dropped his gun."
+					print "You pick it up and hope it's loaded.\n"
+					print "You drop the man your dragging and juke into the shadows faster than the shooter can comprehend."
+					print "As he fires in you general direction, you take three shots at him and all hit the center of mass. He falls back, crying in agony."
+					print "His cries are soon drowned in blood and stop coming altogether."
+					print "You hide behind some trashcans in case the gunshots caught the attention of more cronies.\n"
+					print "As you wait, you inspect your wound. Doc would probably say it's superficial, but it still hurts like hell."
+					print "Blood is pouring down the right side of your face from the scratch above your eye."
+					print "After concluding no one else was coming to investigate the commotion, you powder the wounds to stop the bleeding. And look around.\n"
+					get("gun")
+					gun = 0
+					health_change(-50)
+					power_change(-5)
+				raw_input("Press [Enter]")
+				entry_bad_guys = 0
+				bad_guys_entry()
+			else:
+				error_message(choice)
+				fleeing()
+		else: 
+			error_message(choice)
+			bad_guys_entry()
+
+	else:
+		print "There is a courtyard to the west and an entry to a warehouse to the east."
+
+		choice = raw_input("> ")
+
+		if "inv" in choice:
+			inv_check()
+			bad_guys_entry()
+		elif choice == "look":
+			bad_guys_entry()
+
+		elif choice == "w" or "west" in choice:
+			key_room()
+		elif choice == "e" or "east" in choice:
+			chem_lab()
+		else:
+			error_message(choice)
+			bad_guys_entry()
+
+def fleeing():
+	print "Fight or flee?"
+
+	choice = raw_input("> ")
+
+	if "flee" in choice:
+		print "Your mortality in mind, you turn tail and run to the courtyard."
+		print "Before you can catch your breath, the cronies turn the corner. One fires a shot that lands a foot away from you head!"
+		print "You run to the south! There's a huge pile of rubble, and you decide to hide behind that."
+		print "The two guys follow you to the field of rubble, but can't find you."
+		print "They sniff around for a bit, but decide to head back to guarding the warehouse.\n"
+		print "After you breathe a sigh of relief, you notice this place looks familiar..."
+		school()
+	elif "fight" in choice:
+		if "bat" in inv:
+			print "You hide behind a dumpster, out of the line of sight of the men."
+			print "As they pass you, you swiftly bring the bat over one of the men's head. He buckles and the bat splinters.\n"
+			print "The other guys unholsters his gun and fires a shot. It misses."
+			print "You rush towards him and plunge what's left of the bat into his gut."
+			print "He gasps and falls backward, freeing the bat. You then jam it into his neck. He's not getting back up.\n"
+			print "The first man grabs you from behind. He hooks his arm under yours and pulls until your shoulder pops."
+			print "Pain erupts through your chest. Your head flinches backward, fortunatly knocking the man off of you.\n"
+			print "You spring forward and grab the pistol from the fallen crony."
+			print "While the first man is fumbling for his own pistol, you fire one shot straight to his face. He falls.\n"
+			print "You hide in the shadows in case more cronies follow the gunshots."
+			print "As you wait, you pop your dislocated shoulder back into place. No more bad guys arrive."
+			print "You've won. Barely.\n"
+			get("gun")
+			health_change(-40)
+			power_change(-5)
+
+		elif "bat" not in inv:
+			print "You hide behind a dumpster, out of the line of sight of the men."
+			print "The two men pass you in tandem. You swiftly grab the second one around the neck from behind."
+			print "He claws at your face, getting one good scratch above your right eye. Maintaining control, you twist his head until you hear a crack."
+			print "You drag his lifeless body into the shadows.\n"
+			print "Before you have a chance to set his down, you hear 'HEY HEY HEY'."
+			print "The other man is sprinting toward you with his pistol drawn! He fires a shot and hits you in the shoulder."
+			print "Two more shots come in, but they lodge in the man you are dragging. As you dodge and fumble, you notice the dead man dropped his gun."
+			print "You pick it up and hope it's loaded.\n"
+			print "You drop the man your dragging and juke into the shadows faster than the shooter can comprehend."
+			print "As he fires in you general direction, you take three shots at him and all hit the center of mass. He falls back, crying in agony."
+			print "His cries are soon drowned in blood and stop coming altogether."
+			print "You hide behind some trashcans in case the gunshots caught the attention of more cronies.\n"
+			print "As you wait, you inspect your wound. Doc would probably say it's superficial, but it still hurts like hell."
+			print "Blood is pouring down the right side of your face from the scratch above your eye."
+			print "After concluding no one else was coming to investigate the commotion, you powder the wounds to stop the bleeding. And look around.\n"
+			get("gun")
+			health_change(-50)
+			power_change(-5)
+			raw_input("Press [Enter]")
+		entry_bad_guys = 0
+		bad_guys_entry()
+	else:
+		error_message(choice)
+		fleeing()
+start()
