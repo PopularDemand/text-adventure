@@ -48,9 +48,16 @@ def get(thing):
 	print "You now have the %s" % thing
 
 def dead(reason):
-	print reason
-	print "And thus our story ends."
-	exit(0)
+	if reason != "end":
+		print reason
+		print "And thus our story ends."
+	
+	choice = raw_input("Play again?")
+
+	if choice == "y" or "yes" in choice:
+		start()
+	else:
+		exit(0)
 	
 #game rooms
 def start():
@@ -171,7 +178,30 @@ def school():
 	else:
 		error_message(choice)
 		school()
-	
+
+###
+def home():
+	global home_first_time
+	print "get sad and lose power and health from home"
+	print "familiar shade to the west, entrance to warehouse north, people east"
+
+	if choice == "look":
+		home()
+	elif "inv" in choice:
+		inv_check()
+		home()
+
+	elif choice == "e" or "east" in choice:
+		bad_guys()
+	elif choice == "w" or "west" in choice:
+		school()
+	elif choice == "n" or "north" in choice:
+		bad_guys_entry()
+
+	else:
+		error_message(choice)
+		home()
+
 def locked_door():
 	global outdoor_cat, inv
 	
@@ -257,9 +287,9 @@ def open_door():
 	global key, open_door_first_time
 	
 	if open_door_first_time:
-		print "There is a door here to the warehouse.\nTo the west there is a walkway. To the south, there is a free standing garage."
+		print "There is a door here to the warehouse.\nTo the west there is a walkway. To the south, there is what looks like a garage."
 	else:
-		print "To the east, there is a shadowy room. To the west there is a walkway. To the south, there is a free standing garage."
+		print "To the east, there is a shadowy room. To the west there is a walkway. To the south, there is what looks like a garage."
 	choice = raw_input("> ")
 	
 	if "inv" in choice:
@@ -538,4 +568,83 @@ def fleeing():
 	else:
 		error_message(choice)
 		fleeing()
+
+###
+def chem_lab():
+	print "juicy chemicals that will boost health and power"
+	print "if OD though, die"
+	print "north is warehouse entry, east is closet, west is door outside"
+
+	choice = raw_input("> ")
+
+	if "inv" in choice:
+		inv_check()
+		chem_lab()
+	elif "look" in choice:
+		chem_lab()
+
+	elif choice == "n" or "north" in choice:
+		open_door()
+	elif choice == "e" or "east" in choice:
+		chem_closet()
+	elif choice == "w" or "west" in choice:
+		bad_guys_entry()
+	else:
+		error_message(choice)
+		chem_lab()
+
+###
+def chem_closet():
+	print "more drugs here. will die if OD"
+	print "chem lab to the west"
+
+	choice = raw_input("> ")
+
+	if "inv" in choice:
+		inv_check()
+		chem_closet()
+	elif "look" in choice:
+		chem_closet()
+
+	elif "drugs" in choice:
+		dead("too mush drugs")
+	elif choice == "w" or "west" in choice:
+		chem_lab()
+	else:
+		error_message(choice)
+		chem_closet()
+
+###
+def bad_guys:
+	print "strong bad guys. 3 bad guys. 20 hp each hit"
+	print "there's an opening to the east"
+
+	choice = raw_input("> ")
+
+	if "inv" in choice:
+		inv_check()
+		bad_guys()
+	elif choice == "look":
+		bad_guys()
+	elif choice == "w" or "west" in choice:
+		home()
+	else:
+		error_message(choice)
+		bad_guys()
+
+###
+def scotch():
+	print "finally we come to the climax"
+	print "effects will negatively affect power and health, may die"
+	choice = raw_input("> ")
+
+	end()
+
+###
+def end():
+	print "Before anything resolves... You hear the crack and then...\n\nNothing."
+	print "Unbeknownst to you, a .50 cal bullet comes through the northern window and pierces your left temple."
+	print "\n\nThis is the end."
+	dead("end")
+
 start()
