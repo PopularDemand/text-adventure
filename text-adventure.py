@@ -20,6 +20,10 @@ indoor_cat = 1  #have you beaten indoor cat
 entry_bad_guys = 1  #have you beaten bad guys at warehouse entry
 strong_bad_guys = 1  #have you beaten the strong bad guys
 
+jack = 0
+jill = 0
+midas = 0
+
 def error_message(choice):
 	print "Sorry, %s is not a valid option." % choice
 
@@ -60,6 +64,7 @@ def dead(reason):
 		exit(0)
 	
 #game rooms
+###
 def start():
 	print "[storyline]"
 	print "There is an open alley way to the south."
@@ -100,7 +105,7 @@ def bakery():
 	print "Old bakery that you used to frequent. Seeing it in dilapidated state causes you to start shaking and crying."
 	global bakery_first_time
 	if bakery_first_time == 1:
-		power_change(-5)
+		power_change(-3)
 		bakery_first_time = 0
 	print "There is a shadowy building to the east and an open alley way to the north."
 	
@@ -179,11 +184,26 @@ def school():
 		error_message(choice)
 		school()
 
-###
 def home():
 	global home_first_time
-	print "get sad and lose power and health from home"
-	print "familiar shade to the west, entrance to warehouse north, people east"
+	if home_first_time:
+		print "It's your old home. A modest warehouse, two stories high. Well, it was two stories.."
+		print ("A blast has demolished half of the second story. From where you stand, you can see" +
+			" the inner ceiling you used to stare at while longing for a better life.")
+		print "The entrance is blocked by fallen rubble."
+		print "In an emotional outburst, you try to climb to your old bedroom."
+		print "You make it half way up before slipping on the rubble. You injure your wrist."
+		print "In a flash, you are reminded of the weight of this war and what it has done to your family."
+		power_change(-10)
+		health_change(-20)
+		home_first_time = 0
+	else:
+		print "It's your old home. A modest warehouse, two stories high. Well, it was two stories.."
+
+	print "There is a familiar shaded area to the west, an entrance to a warehouse north. And..."
+	print "Are those people you hear to the east?"
+
+	choice = raw_input("> ")
 
 	if choice == "look":
 		home()
@@ -571,16 +591,44 @@ def fleeing():
 
 ###
 def chem_lab():
-	print "juicy chemicals that will boost health and power"
-	print "if OD though, die"
-	print "north is warehouse entry, east is closet, west is door outside"
+	global jack
+	global jill
 
-	choice = raw_input("> ")
+	print "As you enter the doorway, you can smell them before you see them."
+	print "There's a tabel with some measuring flasks and hot plates. And..."
+	print "Some chems!"
+	if jack == 0:
+		print "There's Jacked, a pill that makes you feel invincible (until the come down)."
+	if jill == 0:
+		print "There's Jilled, an inhalant that helps ease pains."
+	print "You were never into these hard chems. You remember hearing of old aquaintences overdosing on both substances."
+	print ("To the north is a warehouse entry, to the west is a door to the outside. " +
+		"There's a creaky door to the east.")
+
+	choice = raw_input("> ").lower()
 
 	if "inv" in choice:
 		inv_check()
 		chem_lab()
 	elif "look" in choice:
+		chem_lab()
+
+	elif "jack" in choice:
+		print "You pop a Jacked. Immediately you feel the adrenaline course through your system."
+		jack += 1
+		if jack > 1:
+			dead("You heart begins beating faster and faster... Too fast.")
+		power_change(10)
+		chem_lab()
+
+	elif "jill" in choice:
+		print "You spritz some Jilled into each nostril."
+		print "A sense of calm envelopes you. You aches begin to ease."
+		jill += 1
+		health_change(10)
+		if jill > 1:
+			print "Your body becomes heavy.. You have to rest for a bit."
+			power_change(-2)
 		chem_lab()
 
 	elif choice == "n" or "north" in choice:
@@ -595,7 +643,9 @@ def chem_lab():
 
 ###
 def chem_closet():
-	print "more drugs here. will die if OD"
+	print "As you enter the doorway, you can smell them before you see them."
+	print "Chems. Chems everywhere. You have stumbled upon one of Mustafa's stashes."
+	print "There's "
 	print "chem lab to the west"
 
 	choice = raw_input("> ")
@@ -615,7 +665,7 @@ def chem_closet():
 		chem_closet()
 
 ###
-def bad_guys:
+def bad_guys():
 	print "strong bad guys. 3 bad guys. 20 hp each hit"
 	print "there's an opening to the east"
 
@@ -633,7 +683,7 @@ def bad_guys:
 		bad_guys()
 
 ###
-def scotch():
+def scotch_room():
 	print "finally we come to the climax"
 	print "effects will negatively affect power and health, may die"
 	choice = raw_input("> ")
