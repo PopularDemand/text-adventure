@@ -7,4 +7,3 @@ Commands:
 * (w)est
 * (inv)entory
 * (look)
-* (y)es
